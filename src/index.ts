@@ -1,12 +1,21 @@
 import {ExtendableContext} from 'koa';
 import {Provider} from 'oidc-provider';
 
-const port = 9000;
+const port = process.env.PORT || 9000;
+const clientId = process.env.CLIENT_ID || 'zero-interaction-client-id';
+const clientSecret = process.env.CLIENT_SECRET || 'zero-interaction-client-secret';
+const redirectUri = process.env.REDIRECT_URI || 'http://localhost:3000';
+
+console.log('Starting zero-interaction-oidc-provider with the following client configuration:');
+console.log(` * client ID: ${clientId}`);
+console.log(` * client secret: ${clientSecret}`);
+console.log(` * redirect URI: ${redirectUri}`);
+
 const oidc = new Provider(`http://localhost:${port}`, {
     clients: [{
-        client_id: 'foo',
-        client_secret: 'bar',
-        redirect_uris: ['http://localhost:3000'],
+        client_id: clientId,
+        client_secret: clientSecret,
+        redirect_uris: [redirectUri]
     }],
     features: {
         // By default oidc-provider implements dummy login pages for development only.
@@ -22,8 +31,13 @@ const oidc = new Provider(`http://localhost:${port}`, {
 
 oidc.use(handleInteractions);
 
-oidc.listen(port, () => {
+const server = oidc.listen(port, () => {
     console.log(`zero-interaction-oidc-provider listening at http://localhost:${port}`)
+});
+
+process.on('SIGINT', () => {
+    console.log('Shutting down...');
+    server.close();
 });
 
 async function handleInteractions(context, next) {
