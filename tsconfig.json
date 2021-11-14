@@ -1,6 +1,8 @@
 {
   "compilerOptions": {
-    "outDir": "./build"
+    "outDir": "./build",
+    "module": "commonjs",
+    "target": "ES2021"
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules"]

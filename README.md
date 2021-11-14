@@ -17,7 +17,6 @@ docker run --rm \
 You should then provide the following configuration to your OIDC client:
 * authority: http://localhost:9000
 * client ID: zero-interaction-client-id
-* client secret (if required): zero-interaction-client-secret
 
 ### Environment Variables
 
@@ -25,9 +24,9 @@ The simplest configuration can be accomplished using environment variables
 
 | Variable | Description | Default |
 | -------- | ----------- | ------- |
-| REDIRECT_URI | The URI to be called after authentication, e.g. http://localhost:4200/login/callback | http://localhost:3000 |
-| CLIENT_ID | The ID of your OIDC client | zero-interaction-client-id |
-| CLIENT_SECRET | The secret of your OIDC client | zero-interaction-client-secret |
+| REDIRECT_URI | The URI to be called after authentication, e.g. `http://localhost:4200/login/callback`. | `http://localhost:3000` |
+| CLIENT_ID | The ID of your OIDC client. | `zero-interaction-client-id` |
+| CLIENT_SECRET | The secret of your OIDC client, HTTP basic or POST authentication must be used when fetching tokens if and only if a secret is provided. | no secret |
 
 ### Behaviour
 
