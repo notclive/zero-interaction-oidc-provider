@@ -1,6 +1,6 @@
-import {ExtendableContext} from 'koa';
 import {Provider} from 'oidc-provider';
 import {Configuration, ConfigurationError, determineConfiguration, logConfiguration} from './configuration';
+import {insertAuthorisedSession} from './insert-authorised-session';
 
 try {
     const configuration = determineConfiguration();
@@ -37,31 +37,12 @@ function buildProvider(configuration: Configuration) {
         clientBasedCORS: () => true
     });
 
-    oidc.use(handleInteractions);
+    oidc.use(async function (context, next) {
+        await insertAuthorisedSession(oidc, configuration.clientId, context.req);
+        return next();
+    });
 
     return oidc;
-
-    async function handleInteractions(context, next) {
-        // oidc-provider redirects the user to /interaction/:id to login or provide consent.
-        if (context.path.startsWith('/interaction/')) {
-            return immediatelyAuthoriseUser(context);
-        }
-        return next();
-    }
-
-    async function immediatelyAuthoriseUser({req, res}: ExtendableContext) {
-        const {params: {client_id},} = await oidc.interactionDetails(req, res);
-        const accountId = 'fixed-user-id';
-
-        const grant = new oidc.Grant({clientId: client_id as string, accountId});
-        grant.addOIDCScope('openid');
-        const grantId = await grant.save();
-
-        return oidc.interactionFinished(req, res, {
-            login: {accountId},
-            consent: {grantId}
-        });
-    }
 }
 
 function startServer(oidc: Provider, port: number) {
