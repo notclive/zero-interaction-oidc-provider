@@ -2,10 +2,11 @@ name: Build and push Docker image to Docker Hub
 
 on:
   push:
-    branches: [ main ]
+    tags:
+      - 'v*'
 
 jobs:
-  build-and-publish:
+  build-and-push:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -17,6 +18,12 @@ jobs:
         run: yarn
       - name: Build node artifact
         run: yarn build
+      - name: Generate Docker metadata
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: notclive/zero-interaction-oidc-provider
+          tags: type=ref,event=tag
       - name: Login to DockerHub
         uses: docker/login-action@v1
         with:
@@ -26,5 +33,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: true
-          tags: notclive/zero-interaction-oidc-provider:latest
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
