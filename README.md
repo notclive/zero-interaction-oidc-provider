@@ -1,7 +1,9 @@
 # zero-interaction-oidc-provider
 
 This project provides an OIDC provider for use in development and testing.
-The server will never require user interaction, making it perfect for UI testing.
+The server will never require user interaction, making it perfect for automated browser testing.
+
+[Read more about the motivation behind the project](./documentation/explanation/motivation.md).
 
 ## Usage
 
