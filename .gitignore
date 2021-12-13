@@ -3,3 +3,7 @@ node_modules
 
 # Built artifacts
 build
+
+# Cypress
+cypress/screenshots
+cypress/videos
